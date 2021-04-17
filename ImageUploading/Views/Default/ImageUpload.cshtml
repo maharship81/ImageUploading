@@ -1,0 +1,84 @@
+﻿@model ImageUploading.Models.ImageUpload
+@{
+    ViewBag.Title = "ImageUpload";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ImageUpload</h2>
+@using (Ajax.BeginForm("ImageSave", "Default", new AjaxOptions() { HttpMethod = "POST" }, new { id = "frmTaskSave", enctype = "multipart/form-data" }))
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="from-group">
+                <label class="sr-only" for="description">Name:</label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Enter Name" })
+            </div><br />
+            <div class="form-group">
+                <label class="sr-only" for="description">Name:</label>
+                <input type="file" name="file" id="Upimg" multiple><br><br>
+                @*@if (TempData["Images"] != null)
+                    {
+                        string strImages = TempData["Images"].ToString();
+                        string[] imgs = strImages.Split(',');
+
+                        foreach (var imgName in imgs)
+                        {
+                            <a href="~/Images/@imgName" download>
+                                <img src="~/Images/@imgName" style="max-width:100px;max-height:100px" />
+                            </a>
+                        }
+                    }*@
+            </div>
+
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+}
+@section scripts{
+    <script>
+    $(document).ready(function () {
+
+        $('#frmTaskSave').submit(function (e) {
+            var fdata = new FormData($('#frmTaskSave').get(0));
+            var profilephoto = $('#Upimg').val();
+            fdata.append("Upimg", profilephoto);
+            var fileInput = document.getElementById('Upimg');
+            if (fileInput.files.length > 0) {
+                for (i = 0; i < fileInput.files.length; i++) {
+
+                    var sfilename = fileInput.files[i].name;
+                    let srandomid = Math.random().toString(36).substring(7);
+
+                    fdata.append(sfilename, fileInput.files[i]);
+
+                    var markup = "<tr id='" + srandomid + "'><td>" + sfilename + "</td><td><a href='#' onclick='DeleteFile(\"" + srandomid + "\",\"" + sfilename +
+                        "\")'><span class='glyphicon glyphicon-remove red'></span></a></td></tr>"; // Binding the file name
+                    // $("#FilesList tbody").append(markup);
+
+                }
+                fdata.append('files', profilephoto);
+
+
+                var name = $('#Name').val();
+                if (name) {
+                    fdata.append("Name", name);
+                    fdata.append("Upimg", profilephoto);
+                    $.ajax({
+                        type: "Post",
+                        url: '@Url.Action("ImageSave", "Default")',
+                        data: fdata,
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            $("#myModal").html(data);
+                        }
+                    });
+                }
+            }
+        });
+
+
+    });
+
+    </script>
+}
