@@ -14,7 +14,10 @@ namespace ImageUploading.Controllers
     public class DefaultController : Controller
     {
         private DBContext _context = new DBContext();
-
+        public ActionResult Index()
+        {
+            return View();
+        }
         // GET: Default
         public ActionResult ImageUpload()
         {
